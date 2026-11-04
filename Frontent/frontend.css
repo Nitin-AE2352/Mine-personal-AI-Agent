@@ -1,0 +1,336 @@
+
+/* =========================================
+   MyOwnAI | Premium Dark AI Interface
+   Theme: Obsidian + Slate + Indigo
+========================================= */
+
+:root {
+    --bg: #0B0D12;
+    --sidebar: #10131B;
+    --sidebar-width: 250px;
+    --surface: #151923;
+    --surface-hover: #1D2230;
+    --border: #272D3B;
+
+    --accent: #6366F1;
+    --accent-hover: #7779F7;
+    --accent-soft: rgba(99, 102, 241, 0.12);
+
+    --text: #FFFFFF;
+    --muted: #9299AA;
+    --input-text: #E5E7EB;
+}
+
+/* =========================================
+   GLOBAL
+========================================= */
+
+html, body {
+    background: var(--bg) !important;
+    margin: 0;
+}
+
+.stApp {
+    background: var(--bg) !important;
+    color: var(--text) !important;
+}
+
+.main .block-container {
+    max-width: 1100px;
+    padding: 2rem 2rem 11rem;
+}
+
+.home-search {
+    margin: 18vh auto 0;
+    text-align: center;
+}
+
+.home-search h2 {
+    color: var(--text) !important;
+    font-size: clamp(1.6rem, 3vw, 2.4rem);
+    margin-bottom: 0.35rem;
+}
+
+.home-search p {
+    color: var(--muted);
+    font-size: 1rem;
+}
+
+/* =========================================
+   SIDEBAR
+========================================= */
+
+section[data-testid="stSidebar"] {
+    background: var(--sidebar) !important;
+    border-right: 1px solid var(--border);
+    width: var(--sidebar-width) !important;
+    min-width: var(--sidebar-width) !important;
+    max-width: var(--sidebar-width) !important;
+}
+
+section[data-testid="stSidebar"] * {
+    color: var(--text);
+}
+
+/* =========================================
+   HEADINGS
+========================================= */
+
+h1, h2, h3 {
+    color: var(--text) !important;
+    font-weight: 600 !important;
+    letter-spacing: -0.4px;
+}
+
+/* =========================================
+   NORMAL TEXT
+========================================= */
+
+p, label {
+    color: #C0C5D2;
+}
+
+/* =========================================
+   CHAT MESSAGES
+========================================= */
+
+div[data-testid="stChatMessage"] {
+    background: var(--surface) !important;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 18px;
+    margin-bottom: 12px;
+}
+
+div[data-testid="stChatMessage"] p,
+div[data-testid="stChatMessage"] li,
+div[data-testid="stChatMessage"] h1,
+div[data-testid="stChatMessage"] h2,
+div[data-testid="stChatMessage"] h3,
+div[data-testid="stChatMessage"] h4,
+div[data-testid="stChatMessage"] h5,
+div[data-testid="stChatMessage"] h6,
+div[data-testid="stChatMessage"] strong,
+div[data-testid="stChatMessage"] em,
+div[data-testid="stChatMessage"] blockquote {
+    color: var(--text) !important;
+    line-height: 1.7;
+}
+
+div[data-testid="stChatMessage"] ul,
+div[data-testid="stChatMessage"] ol {
+    color: var(--text) !important;
+}
+
+div[data-testid="stChatMessage"] code {
+    color: #F3F4F6 !important;
+    background: #222938 !important;
+}
+
+/* =========================================
+   STREAMLIT CHAT INPUT
+   (Only if native st.chat_input is used)
+========================================= */
+
+div[data-testid="stChatInput"] {
+    background: #131722 !important;
+    border: 1px solid #343B4D !important;
+    border-radius: 15px !important;
+    box-shadow: 0 5px 24px rgba(0,0,0,0.18);
+    box-sizing: border-box;
+    position: fixed !important;
+    left: var(--sidebar-width) !important;
+    right: 1rem !important;
+    width: auto !important;
+    margin: 0 !important;
+}
+
+@media (max-width: 768px) {
+    section[data-testid="stSidebar"] {
+        width: 0 !important;
+        min-width: 0 !important;
+        max-width: 0 !important;
+    }
+
+    div[data-testid="stChatInput"] {
+        left: 1rem !important;
+        right: 1rem !important;
+    }
+}
+
+div[data-testid="stChatInput"] textarea {
+    background: transparent !important;
+    color: #000000 !important;
+    -webkit-text-fill-color: #000000 !important;
+    caret-color: #FFFFFF !important;
+    opacity: 1 !important;
+    font-size: 15px !important;
+    font-weight: 400 !important;
+    text-align: center;
+    margin: 0;
+}
+
+div[data-testid="stChatInput"] textarea:focus,
+div[data-testid="stChatInput"] textarea:active {
+    color: #000000 !important;
+    -webkit-text-fill-color: #000000 !important;
+    caret-color: #000000 !important;
+    opacity: 1 !important;
+}
+
+div[data-testid="stChatInput"] textarea::placeholder {
+    color: #9299AA !important;
+    -webkit-text-fill-color: #9299AA !important;
+    opacity: 1 !important;
+}
+
+div[data-testid="stChatInput"]:focus-within {
+    border-color: var(--accent) !important;
+    box-shadow: 0 0 0 1px var(--accent),
+                0 5px 22px rgba(99,102,241,0.09) !important;
+}
+
+div[data-testid="stChatInput"] button {
+    background: var(--accent) !important;
+    color: #FFFFFF !important;
+    border: none !important;
+    border-radius: 9px !important;
+    transition: 0.2s ease;
+}
+
+div[data-testid="stChatInput"] button:hover {
+    background: var(--accent-hover) !important;
+}
+
+/* =========================================
+   GENERAL BUTTONS
+========================================= */
+
+.stButton button {
+    background: #191E2A !important;
+    color: #DDE1EC !important;
+    border: 1px solid #303748 !important;
+    border-radius: 9px !important;
+    transition: 0.2s ease;
+}
+
+.stButton button:hover {
+    background: #252B3B !important;
+    border-color: var(--accent) !important;
+    color: #FFFFFF !important;
+}
+
+section[data-testid="stSidebar"]
+    [data-testid="stHorizontalBlock"] > div:nth-child(2)
+    .stButton button {
+    min-width: 42px !important;
+    width: 100% !important;
+    height: 38px !important;
+    padding: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    line-height: 1 !important;
+    font-size: 16px !important;
+}
+
+/* =========================================
+   TEXT INPUTS
+========================================= */
+
+.stTextInput input,
+.stTextArea textarea {
+    background: var(--surface) !important;
+    color: var(--input-text) !important;
+    -webkit-text-fill-color: var(--input-text) !important;
+    caret-color: #FFFFFF !important;
+    border: 1px solid var(--border) !important;
+    border-radius: 9px !important;
+}
+
+.stTextInput input::placeholder,
+.stTextArea textarea::placeholder {
+    color: #9299AA !important;
+    -webkit-text-fill-color: #9299AA !important;
+    opacity: 1 !important;
+}
+
+/* =========================================
+   SELECT BOX
+========================================= */
+
+div[data-baseweb="select"] > div {
+    background: var(--surface) !important;
+    border-color: var(--border) !important;
+    color: var(--text) !important;
+}
+
+/* =========================================
+   DIVIDERS
+========================================= */
+
+hr {
+    border-color: var(--border) !important;
+}
+
+/* =========================================
+   CODE BLOCKS
+========================================= */
+
+.stCodeBlock {
+    border: 1px solid var(--border) !important;
+    border-radius: 10px !important;
+}
+
+/* =========================================
+   SCROLLBAR
+========================================= */
+
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #343B4D;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #6366F1;
+}
+
+/* =========================================
+   TEXT SELECTION
+========================================= */
+
+::selection {
+    background: #4547A5;
+    color: #FFFFFF;
+}
+
+/* =========================================
+   TRANSITIONS
+========================================= */
+
+.stButton button,
+div[data-testid="stChatMessage"],
+div[data-testid="stChatInput"] {
+    transition: all 0.2s ease;
+}
+#message {
+    display: block !important;
+    width: 100% !important;
+    min-height: 45px !important;
+    background: transparent !important;
+    color: #000000 !important;
+    -webkit-text-fill-color: #000000 !important;
+    caret-color: #000000 !important;
+    opacity: 1 !important;
+    font-size: 16px !important;
+}
+
+#message::placeholder {
+    color: #aaaaaa !important;
+    -webkit-text-fill-color: #aaaaaa !important;
+    opacity: 1 !important;
+}

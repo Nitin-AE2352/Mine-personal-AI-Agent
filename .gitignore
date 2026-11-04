@@ -1,0 +1,3 @@
+git add -f chat_memory.json chats __pycache__
+git add .
+git status

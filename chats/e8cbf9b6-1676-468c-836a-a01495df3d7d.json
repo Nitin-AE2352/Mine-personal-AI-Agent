@@ -1,0 +1,31 @@
+{
+  "id": "e8cbf9b6-1676-468c-836a-a01495df3d7d",
+  "title": "what is java",
+  "created_at": "2026-11-03 14:56:43",
+  "messages": [
+    {
+      "role": "user",
+      "content": "what is java"
+    },
+    {
+      "role": "assistant",
+      "content": "Java is a programming language created by James Gosling at Sun Microsystems in 1995. It is widely used for developing software applications, especially those that require stability and scalability. Java supports object-oriented programming and is known for its platform independence, meaning code written in Java can run on any platform that has a Java Virtual Machine (JVM)."
+    },
+    {
+      "role": "user",
+      "content": "what is react.js"
+    },
+    {
+      "role": "assistant",
+      "content": "React.js is a JavaScript library for building user interfaces. It is used to create components and manage the state of the user interface. React is based on the principles of the Model-View-Controller (MVC) design pattern, which separates the UI from the logic and state. This allows for more modular and reusable code, and makes it easier to manage the state of the application. React.js is used to build web applications and mobile apps, as well as desktop and server-side applications."
+    },
+    {
+      "role": "user",
+      "content": "node.js ky hai"
+    },
+    {
+      "role": "assistant",
+      "content": "Node.js is a JavaScript runtime built on Chrome's V8 JavaScript engine. It is designed to run JavaScript on the server side, making it possible to write server-side code using JavaScript. Node.js allows developers to run JavaScript on the server, which can be useful for building applications that need to interact with the client or other servers. It is used for building real-time applications, such as chat applications, multiplayer games, and other applications that require real-time communication. Node.js is also used for building back-end applications, as well as front-end applications that require server-side processing."
+    }
+  ]
+}

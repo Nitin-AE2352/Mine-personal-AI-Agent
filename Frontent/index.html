@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            background: transparent;
+            font-family: Arial, sans-serif;
+            overflow: hidden;
+        }
+
+        .input-container {
+            width: 100%;
+            height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 9px 12px;
+            background: #ffffff;
+            border: 1px solid #d1d5db;
+            border-radius: 18px;
+            box-shadow: 0 5px 24px rgba(0, 0, 0, 0.2);
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .input-container:focus-within {
+            border-color: #10a37f;
+            box-shadow: 0 0 0 2px rgba(16, 163, 127, 0.16),
+                        0 5px 24px rgba(0, 0, 0, 0.2);
+        }
+
+        #message {
+            flex: 1;
+            min-width: 0;
+            height: 50px;
+            max-height: 100px;
+            resize: none;
+            border: none;
+            outline: none;
+            background: transparent;
+            color: #000000;
+            -webkit-text-fill-color: #000000;
+            caret-color: #000000;
+            font-size: 16px;
+            font-family: Arial, sans-serif;
+            padding: 14px 8px;
+        }
+
+        #message::placeholder {
+            color: #777d87;
+            -webkit-text-fill-color: #777d87;
+            opacity: 1;
+        }
+
+        .action-button {
+            width: 44px;
+            height: 44px;
+            flex-shrink: 0;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 18px;
+            color: white;
+        }
+
+        #mic {
+            background: #687386;
+        }
+
+        #send {
+            background: #10a37f;
+            font-size: 21px;
+        }
+
+        .action-button:hover {
+            opacity: 0.85;
+        }
+
+        #status {
+            color: #505763;
+            font-size: 12px;
+            padding: 2px 10px;
+            min-height: 14px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="input-container">
+
+        <textarea
+            id="message"
+            rows="1"
+            placeholder="Ask anything..."
+            aria-label="Ask a question"
+        ></textarea>
+
+        <button
+            id="mic"
+            class="action-button"
+            type="button"
+            title="Speak"
+        >🎤</button>
+
+        <button
+            id="send"
+            class="action-button"
+            type="button"
+            title="Send"
+        >➤</button>
+
+    </div>
+
+    <div id="status"></div>
+
+    <script>
+        const messageBox = document.getElementById("message");
+        const sendButton = document.getElementById("send");
+        const micButton = document.getElementById("mic");
+        const statusBox = document.getElementById("status");
+
+        let eventCounter = 0;
+        let mediaRecorder = null;
+        let audioChunks = [];
+        let isRecording = false;
+
+
+        // --------------------------------
+        // STREAMLIT FRAME HEIGHT
+        // --------------------------------
+
+        function setFrameHeight(height) {
+            window.parent.postMessage({
+                isStreamlitMessage: true,
+                type: "streamlit:setFrameHeight",
+                height: height
+            }, "*");
+        }
+
+
+        // --------------------------------
+        // SEND DATA TO PYTHON
+        // --------------------------------
+
+        function sendToPython(data) {
+
+            eventCounter++;
+
+            const uniqueId = window.crypto && crypto.randomUUID
+                ? crypto.randomUUID()
+                : Date.now() + "-" + eventCounter;
+
+            data.event_id = uniqueId;
+
+            window.parent.postMessage({
+                isStreamlitMessage: true,
+                type: "streamlit:setComponentValue",
+                value: data
+            }, "*");
+        }
+
+        function scrollToLatestMessage() {
+            const parentDocument = window.parent.document;
+            const messages = parentDocument.querySelectorAll(
+                'div[data-testid="stChatMessage"]'
+            );
+            const latestMessage = messages[messages.length - 1];
+
+            if (latestMessage) {
+                latestMessage.scrollIntoView({
+                    behavior: "smooth",
+                    block: "center"
+                });
+                return;
+            }
+
+            const scrollContainer = parentDocument.querySelector(
+                '[data-testid="stAppViewContainer"]'
+            );
+
+            if (scrollContainer) {
+                scrollContainer.scrollTo({
+                    top: scrollContainer.scrollHeight,
+                    behavior: "smooth"
+                });
+            }
+        }
+
+        function scrollAfterRender() {
+            [50, 300, 800].forEach(function(delay) {
+                window.setTimeout(scrollToLatestMessage, delay);
+            });
+        }
+
+
+        // --------------------------------
+        // SEND TEXT
+        // --------------------------------
+
+        function sendMessage() {
+
+            const text = messageBox.value.trim();
+
+            if (!text) {
+                statusBox.textContent = "Please enter a question.";
+                return;
+            }
+
+            sendToPython({
+                type: "text",
+                text: text
+            });
+
+            messageBox.value = "";
+            statusBox.textContent = "";
+
+            scrollAfterRender();
+        }
+
+        sendButton.addEventListener("click", sendMessage);
+
+        messageBox.addEventListener("keydown", function(event) {
+            if (event.key === "Enter" && !event.shiftKey) {
+                event.preventDefault();
+                sendMessage();
+            }
+        });
+
+
+        // --------------------------------
+        // MICROPHONE
+        // --------------------------------
+
+        micButton.addEventListener("click", async function() {
+
+            if (isRecording && mediaRecorder) {
+                mediaRecorder.stop();
+                return;
+            }
+
+            try {
+
+                const stream =
+                    await navigator.mediaDevices.getUserMedia({
+                        audio: true
+                    });
+
+                let mimeType = "audio/webm";
+
+                if (MediaRecorder.isTypeSupported("audio/webm;codecs=opus")) {
+                    mimeType = "audio/webm;codecs=opus";
+                } else if (MediaRecorder.isTypeSupported("audio/mp4")) {
+                    mimeType = "audio/mp4";
+                }
+
+                mediaRecorder = new MediaRecorder(
+                    stream,
+                    { mimeType: mimeType }
+                );
+
+                audioChunks = [];
+                isRecording = true;
+
+                micButton.textContent = "⏹";
+                statusBox.textContent = "Listening... Click again to stop.";
+
+                mediaRecorder.ondataavailable = function(event) {
+
+                    if (event.data.size > 0) {
+                        audioChunks.push(event.data);
+                    }
+
+                };
+
+                mediaRecorder.onstop = async function() {
+
+                    isRecording = false;
+                    micButton.textContent = "🎤";
+
+                    stream.getTracks().forEach(
+                        track => track.stop()
+                    );
+
+                    const audioBlob = new Blob(
+                        audioChunks,
+                        { type: mediaRecorder.mimeType }
+                    );
+
+                    const reader = new FileReader();
+
+                    reader.onloadend = function() {
+
+                        const base64Audio =
+                            reader.result.split(",")[1];
+
+                        sendToPython({
+                            type: "audio",
+                            audio: base64Audio,
+                            mime_type: audioBlob.type
+                        });
+
+                        scrollAfterRender();
+
+                        statusBox.textContent =
+                            "Audio sent. Processing...";
+
+                    };
+
+                    reader.readAsDataURL(audioBlob);
+
+                };
+
+                mediaRecorder.start();
+
+            } catch (error) {
+
+                isRecording = false;
+                micButton.textContent = "🎤";
+
+                statusBox.textContent =
+                    "Microphone error: " + error.message;
+
+            }
+
+        });
+
+
+        // --------------------------------
+        // STREAMLIT COMPONENT READY
+        // --------------------------------
+
+        function componentReady() {
+
+            window.parent.postMessage({
+                isStreamlitMessage: true,
+                type: "streamlit:componentReady",
+                apiVersion: 1
+            }, "*");
+
+            // Pin only this iframe to the viewport; do not affect Streamlit
+            // wrappers or the rest of the page layout.
+            if (window.frameElement) {
+                window.frameElement.style.position = "fixed";
+                window.frameElement.style.left = "50%";
+                window.frameElement.style.right = "auto";
+                window.frameElement.style.bottom = "10px";
+                window.frameElement.style.width = "calc(100vw - 24px)";
+                window.frameElement.style.maxWidth = "1060px";
+                window.frameElement.style.height = "92px";
+                window.frameElement.style.transform = "translateX(-50%)";
+                window.frameElement.style.margin = "0";
+                window.frameElement.style.display = "block";
+                window.frameElement.style.zIndex = "9999";
+            }
+
+            setFrameHeight(92);
+        }
+
+        componentReady();
+
+        window.addEventListener("load", scrollAfterRender);
+
+    </script>
+
+</body>
+</html>
